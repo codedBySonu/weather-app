@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <link rel="icon" href="weather.png" type="image/png">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #000000, #4a4a4a);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .header {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      margin: 0;
+    }
+
+    .header .description {
+      font-size: 16px;
+      margin: 8px 0;
+    }
+
+    .feels-like {
+      font-size: 14px;
+      margin: 6px 0;
+      opacity: 0.8;
+    }
+
+    .summary {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .hourly-forecast {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .hour-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 10px;
+      min-width: 70px;
+      text-align: center;
+      font-size: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .hour-card img {
+      width: 24px;
+      margin: 4px 0;
+    }
+
+    .rain-chart {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .bar {
+      height: 60px;
+      width: 20px;
+      background: #3498db;
+      margin: 0 5px;
+      border-radius: 4px;
+    }
+
+    .bars-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      margin-top: 10px;
+    }
+
+    .umbrella-tip {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      border-radius: 14px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .search-bar button {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-bar button:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="search-bar">
+      <input type="text" id="cityInput" placeholder="Search city...">
+      <button onclick="getWeather()"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="header">
+      <h2 id="location">--</h2>
+      <h1 id="temperature">--°</h1>
+      <div class="description" id="description">--</div>
+      <div class="feels-like" id="feelsLike">-- / -- Feels like --</div>
+      <div class="feels-like" id="localTime">--</div>
+    </div>
+
+    <div class="summary" id="summary">--</div>
+
+    <div class="hourly-forecast" id="hourlyForecast"></div>
+
+    <div class="rain-chart">
+      <div><strong>Rain Chart</strong></div>
+      <div class="bars-container" id="rainBars"></div>
+    </div>
+
+    <div class="umbrella-tip" id="umbrellaTip">--</div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value;
+      const apiKey = "792c82d39bd5405c854141922251806";
+
+      const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=1&aqi=no&alerts=no`);
+      const data = await res.json();
+
+      const current = data.current;
+      const forecast = data.forecast.forecastday[0];
+
+      document.getElementById("location").textContent = `${data.location.name}`;
+      document.getElementById("temperature").innerHTML = `
+        <img src="https:${current.condition.icon}" 
+        style="width:89px; vertical-align:middle; margin-right:8px;">
+         ${current.temp_c}°
+      `;
+
+      document.getElementById("description").textContent = current.condition.text;
+      document.getElementById("feelsLike").textContent = `${forecast.day.maxtemp_c}° / ${forecast.day.mintemp_c}° Feels like ${current.feelslike_c}°`;
+      document.getElementById("localTime").textContent = `${data.location.localtime}`;
+
+      document.getElementById("summary").textContent = `${forecast.day.condition.text}. Highs ${forecast.day.maxtemp_c}°C and lows ${forecast.day.mintemp_c}°C.`;
+
+      
+      const hourly = forecast.hour;
+      const now = new Date().getHours();
+      const hourlyHTML = hourly.slice(now, now + 7).map(h => `
+        <div class="hour-card">
+          <p>${h.time.split(" ")[1]}</p>
+          <img src="https:${h.condition.icon}" />
+          <p>${h.temp_c}°</p>
+          <p>${h.chance_of_rain}%</p>
+        </div>
+      `).join("");
+      document.getElementById("hourlyForecast").innerHTML = hourlyHTML;
+
+      
+      const rainBarsHTML = hourly.slice(now, now + 7).map(h => {
+        const height = Math.min(h.precip_mm * 3, 60);
+        return `<div>
+                  <div class="bar" style="height:${height}px"></div>
+                  <div style="font-size: 10px; text-align:center;">${h.precip_mm}mm</div>
+                </div>`;
+      }).join("");
+      document.getElementById("rainBars").innerHTML = rainBarsHTML;
+
+      const willRain = forecast.day.daily_chance_of_rain > 50;
+      document.getElementById("umbrellaTip").textContent = willRain ? "🌂 Grab an Umbrella! Rain likely to continue" : "☀️ No rain expected";
+    }
+  </script>
+</body>
+</html>
