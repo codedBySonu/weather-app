@@ -1,6 +1,6 @@
 # 🌤️ Weather App
 
-A sleek, responsive weather app built with HTML, CSS, and JavaScript — inspired by the **Samsung Weather** UI.  
+A sleek, responsive weather app built with HTML, CSS, and JavaScript .
 It fetches real-time weather data from **WeatherAPI**, including hourly forecasts, rain probability, and condition-based visuals.
 
 ---
@@ -9,7 +9,6 @@ It fetches real-time weather data from **WeatherAPI**, including hourly forecast
 
 ![Weather App Screenshot](screenshot.png)
 
-> 🖼️ **To show the screenshot**, upload an image named `screenshot.png` in your GitHub repository's root folder.
 
 ---
 
